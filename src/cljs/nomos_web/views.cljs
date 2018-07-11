@@ -29,20 +29,26 @@
       valid-color
       invalid-color)))
 
+
+(defn input-control [input label]
+  [:div.field
+   [:label.label label]
+   [:div.control
+    [input]]
+   [:p.help
+      {:class (teste-collor (@app-state :password))}
+      (if (teste-is-valid? (@app-state :password)) "É valido" "Não válido")]])
+
 (defn input-teste []
   [:input.input {:type "text"
                  :class (teste-collor (@app-state :password))
-           :on-change #(swap! app-state assoc :password (-> % .-target .-value))}])
+                 :on-change #(swap! app-state assoc :password (-> % .-target .-value))}])
+
 
 (defn home-panel []
   (let [name (re-frame/subscribe [::subs/name])]
     [:div
-     [:div.field
-      [:div.control
-       [input-teste]]]
-     [:p.help
-      {:class (teste-collor (@app-state :password))}
-      (if (teste-is-valid? (@app-state :password)) "É valido" "Não válido")]
+     [input-control input-teste "Cadastro"]
      [:div
       [:a {:href "#/about"}
        "go to About Page"]]
