@@ -1,22 +1,52 @@
 (ns nomos-web.views
   (:require
+   [reagent.core :as r]
    [re-frame.core :as re-frame]
    [nomos-web.subs :as subs]
    ))
 
+;; shared componentes
+
+
+
+;; funcionalidade XPTO
+
 
 ;; home
+
+(def app-state (r/atom {:password nil}))
+
+(defn teste-is-valid?
+  [password]
+  (> (count password) 5))
+
+
+(defn teste-collor
+  [password]
+  (let [valid-color "is-info"
+        invalid-color "is-danger"]
+    (if (teste-is-valid? password)
+      valid-color
+      invalid-color)))
+
+(defn input-teste []
+  [:input.input {:type "text"
+                 :class (teste-collor (@app-state :password))
+           :on-change #(swap! app-state assoc :password (-> % .-target .-value))}])
 
 (defn home-panel []
   (let [name (re-frame/subscribe [::subs/name])]
     [:div
-     [:h1 (str "Hello from " @name ". This is the Home Page.")]
-
+     [:div.field
+      [:div.control
+       [input-teste]]]
+     [:p.help
+      {:class (teste-collor (@app-state :password))}
+      (if (teste-is-valid? (@app-state :password)) "É valido" "Não válido")]
      [:div
       [:a {:href "#/about"}
        "go to About Page"]]
      ]))
-
 
 ;; about
 
