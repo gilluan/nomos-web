@@ -14,7 +14,7 @@
 
 ;; home
 
-(def app-state (r/atom {:password nil}))
+(def app-state (r/atom {:password nil :name nil}))
 
 (defn teste-is-valid?
   [password]
@@ -44,13 +44,21 @@
                  :class (teste-collor (attr @estado))
                  :on-change #(swap! estado assoc attr (-> % .-target .-value))}])
 
+;;TODO: finalizaer o modelo
+;; este eh apenas a ideia de como vai ficar os formulários de input
 (defn form-teste []
-  [input-control {:input input-text
-                  :label "Cadastro"
-                  :attr :password
-                  :estado app-state
-                  :fn-validation teste-is-valid?
-                  }])
+  [:div
+   [input-control {:input input-text
+                   :label "Nome"
+                   :attr :name
+                   :estado app-state
+                   :fn-validation teste-is-valid?
+                   }]
+   [input-control {:input input-text
+                   :label "Password"
+                   :attr :password
+                   :estado app-state
+                   :fn-validation teste-is-valid?}]])
 
 
 (defn home-panel []
