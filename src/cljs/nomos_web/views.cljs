@@ -14,51 +14,62 @@
 
 ;; home
 
-(def app-state (r/atom {:password nil :name nil}))
 
-(defn teste-is-valid?
-  [password]
-  (> (count password) 5))
 
 
 (defn teste-collor
-  [password]
+  [callback password]
   (let [valid-color "is-info"
         invalid-color "is-danger"]
-    (if (teste-is-valid? password)
+    (if (callback password)
       valid-color
       invalid-color)))
-
 
 (defn input-control [state]
   [:div.field
    [:label.label (:label state)]
    [:div.control
-    [(:input state) (:attr state) (:estado state)]]
+    [(:input state) (:attr state) (:estado state) (:fn-validation state)]]
    [:p.help
-      {:class (teste-collor (@(:estado state) (:attr state)))}
-      (if (teste-is-valid? (@(:estado state) (:attr state))) "É valido" "Não válido")]])
+      {:class (teste-collor (:fn-validation state) (@(:estado state) (:attr state)))}
+      (if ((:fn-validation state) (@(:estado state) (:attr state))) "É valido" "Não válido")]])
 
-(defn input-text [attr estado]
+(defn input-text [attr estado callback]
   [:input.input {:type "text"
-                 :class (teste-collor (attr @estado))
+                 :class (teste-collor callback (attr @estado))
                  :on-change #(swap! estado assoc attr (-> % .-target .-value))}])
+
+
 
 ;;TODO: finalizaer o modelo
 ;; este eh apenas a ideia de como vai ficar os formulários de input
+(def form-state (r/atom {:name nil
+                        :age nil
+                        :password nil}))
+
+(defn is-name-valid?
+  [name]
+  (> (count name) 10))
+
+
+(defn is-password-valid?
+  [password]
+  (> (count password) 4))
+
+
 (defn form-teste []
   [:div
    [input-control {:input input-text
                    :label "Nome"
                    :attr :name
-                   :estado app-state
-                   :fn-validation teste-is-valid?
+                   :estado form-state
+                   :fn-validation is-name-valid?
                    }]
    [input-control {:input input-text
                    :label "Password"
                    :attr :password
-                   :estado app-state
-                   :fn-validation teste-is-valid?}]])
+                   :estado form-state
+                   :fn-validation is-password-valid?}]])
 
 
 (defn home-panel []
@@ -67,6 +78,7 @@
      [:h1 "Formulario de exemplo"]
      [:br]
      [:br]
+     [:pre.json {} @form-state]
      [form-teste]
      [:div
       [:a {:href "#/about"}
