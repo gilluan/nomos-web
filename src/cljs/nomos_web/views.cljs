@@ -30,25 +30,36 @@
       invalid-color)))
 
 
-(defn input-control [input label]
+(defn input-control [state]
   [:div.field
-   [:label.label label]
+   [:label.label (:label state)]
    [:div.control
-    [input]]
+    [(:input state) (:attr state) (:estado state)]]
    [:p.help
-      {:class (teste-collor (@app-state :password))}
-      (if (teste-is-valid? (@app-state :password)) "É valido" "Não válido")]])
+      {:class (teste-collor (@(:estado state) (:attr state)))}
+      (if (teste-is-valid? (@(:estado state) (:attr state))) "É valido" "Não válido")]])
 
-(defn input-teste []
+(defn input-text [attr estado]
   [:input.input {:type "text"
-                 :class (teste-collor (@app-state :password))
-                 :on-change #(swap! app-state assoc :password (-> % .-target .-value))}])
+                 :class (teste-collor (attr @estado))
+                 :on-change #(swap! estado assoc attr (-> % .-target .-value))}])
+
+(defn form-teste []
+  [input-control {:input input-text
+                  :label "Cadastro"
+                  :attr :password
+                  :estado app-state
+                  :fn-validation teste-is-valid?
+                  }])
 
 
 (defn home-panel []
   (let [name (re-frame/subscribe [::subs/name])]
     [:div
-     [input-control input-teste "Cadastro"]
+     [:h1 "Formulario de exemplo"]
+     [:br]
+     [:br]
+     [form-teste]
      [:div
       [:a {:href "#/about"}
        "go to About Page"]]
